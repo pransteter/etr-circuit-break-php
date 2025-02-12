@@ -1,7 +1,23 @@
 {
     "name": "pransteter/etr-circuit-break-php",
-    "description": "A short description of what your package does",
+    "description": "A little library to offer a simple manager of circuit breaker pattern.",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Romulo Pransteter da Silva",
+            "email": "romulo.pransteter@gmail.com"
+        }
+    ],
     "require": {
         "php": ">=8.2"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^11"
+    },
+    "autoload": {
+        "psr-4": {
+            "Pransteter\\": "src/"
+        }
     }
 }
