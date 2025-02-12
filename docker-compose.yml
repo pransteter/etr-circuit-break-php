@@ -1,0 +1,8 @@
+services:
+    php:
+        image: php:8.2-cli-alpine
+        container_name: php
+        build: .
+        volumes:
+            - .:/var/www/html
+        command: sleep infinity
