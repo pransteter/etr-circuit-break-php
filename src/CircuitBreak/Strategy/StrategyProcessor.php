@@ -2,29 +2,35 @@
 
 namespace Pransteter\CircuitBreak\Strategy;
 
-use Pransteter\CircuitBreak\Contracts\HasCircuitBreak;
+use Pransteter\CircuitBreak\DTOs\Configuration;
 use Pransteter\CircuitBreak\DTOs\State;
-use Pransteter\CircuitBreak\Strategy\StateFactories\ClosedStateFactory;
-use Pransteter\CircuitBreak\Strategy\StateFactories\StateFactory;
+use Pransteter\CircuitBreak\Strategy\Contracts\Strategy;
+use Pransteter\CircuitBreak\Strategy\Strategies\InitialStrategy;
 
 class StrategyProcessor
 {
-    private string $processName;
-
-    public function setInitialParameters(HasCircuitBreak $process): void
-    {
-        $this->processName = $process->getProcessName();
-
-        // check if process exists in persistence location.
-
-        // if not, create it:
-        $initialState = $this->getState(new ClosedStateFactory());
+    public function __construct(
+        private readonly Configuration $configuration,
+        private readonly ?State $lastPersistedState = null,
+    ) {
     }
 
-    public function getState(
-        StateFactory $stateFactory,
-        ?State $currentState = null,
-    ): State {
-        return $stateFactory->make($currentState);
+    public function processStrategy(bool $processWasSuccessful): State
+    {
+        $strategy = $this->identifyStrategyToBeExecuted();
+
+        return $strategy->getNewState($processWasSuccessful);
+    }
+
+    private function identifyStrategyToBeExecuted(): Strategy
+    {
+        if ($this->lastPersistedState === null) {
+            return new InitialStrategy(
+                $this->configuration,
+                $this->lastPersistedState,
+            );
+        }
+
+        // continue...
     }
 }

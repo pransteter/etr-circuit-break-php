@@ -4,7 +4,7 @@ namespace Pransteter\CircuitBreak\DTOs;
 
 final class OpenedState extends State
 {
-    private const NAME = 'opened';
+    protected const NAME = 'opened';
     
     protected function getName(): string
     {
