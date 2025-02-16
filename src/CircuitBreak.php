@@ -4,7 +4,7 @@ namespace Pransteter;
 
 use Pransteter\CircuitBreak\Contracts\StateRepository;
 use Pransteter\CircuitBreak\DTOs\Configuration;
-use Pransteter\CircuitBreak\Strategy\StrategyProcessor;
+use Pransteter\CircuitBreak\Strategy\StrategyExecutor;
 use Pransteter\CircuitBreak\Transformers\StateTransformer;
 use Pransteter\CircuitBreak\Validators\StateValidator;
 
@@ -37,10 +37,10 @@ class CircuitBreak
             $this->configuration->processIdentifier
         );
 
-        $newState = (new StrategyProcessor(
+        $newState = (new StrategyExecutor(
             $this->configuration, 
             $this->stateTransformer->transformRawStateToDTOState($lastPersistedState),
-        ))->processStrategy($processWasSuccessful);
+        ))->executeStrategy($processWasSuccessful);
 
         $this->stateRepository->saveState(
             $this->configuration->processIdentifier,

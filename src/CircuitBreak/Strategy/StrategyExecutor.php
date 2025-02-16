@@ -15,7 +15,7 @@ class StrategyProcessor
     ) {
     }
 
-    public function processStrategy(bool $processWasSuccessful): State
+    public function executeStrategy(bool $processWasSuccessful): State
     {
         $strategy = $this->identifyStrategyToBeExecuted();
 
