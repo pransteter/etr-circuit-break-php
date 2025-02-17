@@ -3,14 +3,22 @@
 namespace Pransteter;
 
 use Pransteter\CircuitBreak\Contracts\StateRepository;
+use Pransteter\CircuitBreak\DTOs\ClosedState;
 use Pransteter\CircuitBreak\DTOs\Configuration;
-use Pransteter\CircuitBreak\Strategy\StrategyExecutor;
+use Pransteter\CircuitBreak\DTOs\HalfOpenedState;
+use Pransteter\CircuitBreak\DTOs\OpenedState;
+use Pransteter\CircuitBreak\DTOs\State;
+use Pransteter\CircuitBreak\Strategy\StrategyProcessor;
 use Pransteter\CircuitBreak\Transformers\StateTransformer;
 use Pransteter\CircuitBreak\Validators\StateValidator;
 
 class CircuitBreak
 {
+    private ?State $currentState;
+
     private readonly StateTransformer $stateTransformer;
+
+    private readonly StrategyProcessor $strategyProcessor;
 
     public function __construct(
         private readonly Configuration $configuration,
@@ -19,32 +27,70 @@ class CircuitBreak
         $this->stateTransformer = new StateTransformer(
             new StateValidator(),
         );
-    }
-    
-    public function resolveAsSuccess(): void
-    {
-        $this->resolve(true);
+
+        $this->strategyProcessor = new StrategyProcessor($this->configuration);
     }
 
-    public function resolveAsFailure(): void
+    public function begin(): void
     {
-        $this->resolve(false);
+        $this->loadCurrentState();
     }
 
-    private function resolve(bool $processWasSuccessful): void
+    public function canExecute(): bool
     {
-        $lastPersistedState = $this->stateRepository->getState(
-            $this->configuration->processIdentifier
+        if ($this->currentState instanceof ClosedState) {
+            return true;
+        }
+
+        return $this->canExecuteInAExceptionalCondition();
+    }
+
+    public function end(bool $executionWasSuccessful): void
+    {
+        $newState = $this->strategyProcessor->processStrategy(
+            $this->currentState,
+            $executionWasSuccessful,
         );
-
-        $newState = (new StrategyExecutor(
-            $this->configuration, 
-            $this->stateTransformer->transformRawStateToDTOState($lastPersistedState),
-        ))->executeStrategy($processWasSuccessful);
 
         $this->stateRepository->saveState(
             $this->configuration->processIdentifier,
             $this->stateTransformer->transformDTOStateToRawState($newState),
         );
+    }
+
+    private function loadCurrentState(): void
+    {
+        $rawState = $this->stateRepository->getState(
+            $this->configuration->processIdentifier,
+        );
+
+        $this->currentState = $this->stateTransformer
+            ->transformRawStateToDTOState($rawState);
+    }
+
+    private function canExecuteInAExceptionalCondition(): bool
+    {
+        $nextState = $this->strategyProcessor->processStrategy(
+            $this->currentState,
+            null
+        );
+
+        if ($nextState instanceof HalfOpenedState) {
+            $this->updateCurrentState($nextState);
+            
+            return true;
+        }
+
+        return false;
+    }
+
+    private function updateCurrentState(HalfOpenedState $nextState): void
+    {
+        $this->stateRepository->saveState(
+            $this->configuration->processIdentifier,
+            $this->stateTransformer->transformDTOStateToRawState($nextState),
+        );
+
+        $this->currentState = $nextState;
     }
 }

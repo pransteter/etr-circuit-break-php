@@ -11,23 +11,28 @@ class StrategyProcessor
 {
     public function __construct(
         private readonly Configuration $configuration,
-        private readonly ?State $lastPersistedState = null,
     ) {
     }
 
-    public function executeStrategy(bool $processWasSuccessful): State
-    {
-        $strategy = $this->identifyStrategyToBeExecuted();
+    public function processStrategy(
+        ?State $currentState = null,
+        ?bool $executionWasSuccessful = null,
+    ): State {
+        $strategy = $this->identifyStrategyToBeProcessed();
 
-        return $strategy->getNewState($processWasSuccessful);
+        return $strategy->getNewState($executionWasSuccessful);
     }
 
-    private function identifyStrategyToBeExecuted(): Strategy
+    // create class to identify strategy to be processed
+    private function identifyStrategyToBeProcessed(
+        ?State $currentState = null,
+        ?bool $executionWasSuccessful = null,
+    ): Strategy
     {
-        if ($this->lastPersistedState === null) {
+        if ($currentState === null) {
             return new InitialStrategy(
                 $this->configuration,
-                $this->lastPersistedState,
+                $currentState,
             );
         }
 
