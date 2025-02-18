@@ -2,7 +2,7 @@
 
 ### Usage:
 
-```
+```php
 // Initializing
 $cb = new CircuitBreak(
     $configuration,
