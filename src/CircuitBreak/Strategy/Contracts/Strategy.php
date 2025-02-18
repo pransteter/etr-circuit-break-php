@@ -13,5 +13,5 @@ abstract class Strategy
     ) {
     }
 
-    abstract public function getNewState(bool $wasProcessSuccessful): State;
+    abstract public function getNewState(bool $executionWasSuccessful): State;
 }
