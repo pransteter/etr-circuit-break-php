@@ -11,44 +11,32 @@ use Pransteter\CircuitBreak\Strategy\Contracts\Strategy;
 
 class ClosedStateStrategy extends Strategy
 {
-    public function getNewState(bool $executionWasSuccessful): State
+    public function getNewState(?bool $executionWasSuccessful = null): State
     {
         if (!$executionWasSuccessful) {
             return $this->getNewStateWhenExecutionWasNotSuccessful();
         }
 
         return new ClosedState(
-            totalTries: 0,
+            totalFailedTries: 0,
             noTriesTimestampLimit: null,
         );
     }
 
     private function getNewStateWhenExecutionWasNotSuccessful(): State
     {
-        $totalTries = $this->lastPersistedState->getTotalTries() ?? 0;
+        $totalFailedTries = $this->lastPersistedState->getTotalFailedTries() ?? 0;
 
-        if ($totalTries === $this->configuration->failedTriesLimit) {
+        if ($totalFailedTries === $this->configuration->failedTriesLimit) {
             return new OpenedState(
-                totalTries: null,
+                totalFailedTries: null,
                 noTriesTimestampLimit: $this->calculateNoTriesTimestampLimit(),
             );
         }
 
         return new ClosedState(
-            totalTries: $totalTries++,
+            totalFailedTries: $totalFailedTries + 1,
             noTriesTimestampLimit: null,
         );
-    }
-
-    private function calculateNoTriesTimestampLimit(): int
-    {
-        $now = new DateTime('now');
-        $interval = DateInterval::createFromDateString(
-            sprintf('%d seconds', $this->configuration->secondsToStayOpened),
-        );
-
-        $noTriesDateLimit = $now->add($interval);
-
-        return $noTriesDateLimit->getTimestamp();
     }
 }

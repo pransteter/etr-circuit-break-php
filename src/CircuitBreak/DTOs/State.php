@@ -11,7 +11,7 @@ abstract class State
     abstract protected function getName(): string;
 
     public function __construct(
-        private readonly ?int $totalTries,
+        private readonly ?int $totalFailedTries,
         private readonly ?int $noTriesTimestampLimit,
     ) {
         $this->name = $this->getName();
@@ -21,13 +21,13 @@ abstract class State
     {
         return new stdClass(
             name: $this->name,
-            totalTries: $this->totalTries,
+            totalFailedTries: $this->totalFailedTries,
             noTriesTimestampLimit: $this->noTriesTimestampLimit,
         );
     }
 
-    public function getTotalTries(): ?int
+    public function getTotalFailedTries(): ?int
     {
-        return $this->totalTries;
+        return $this->totalFailedTries;
     }
 }

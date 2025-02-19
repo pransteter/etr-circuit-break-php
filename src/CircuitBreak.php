@@ -38,7 +38,10 @@ class CircuitBreak
 
     public function canExecute(): bool
     {
-        if ($this->currentState instanceof ClosedState) {
+        if (
+            is_null($this->currentState)
+            || $this->currentState instanceof ClosedState
+        ) {
             return true;
         }
 
@@ -64,8 +67,9 @@ class CircuitBreak
             $this->configuration->processIdentifier,
         );
 
-        $this->currentState = $this->stateTransformer
-            ->transformRawStateToDTOState($rawState);
+        $this->currentState = is_null($rawState) 
+            ? null
+            : $this->stateTransformer->transformRawStateToDTOState($rawState);
     }
 
     private function canExecuteInAExceptionalCondition(): bool

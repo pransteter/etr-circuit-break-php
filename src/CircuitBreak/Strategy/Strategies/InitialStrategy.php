@@ -8,10 +8,10 @@ use Pransteter\CircuitBreak\Strategy\Contracts\Strategy;
 
 class InitialStrategy extends Strategy
 {
-    public function getNewState(bool $executionWasSuccessful): State
+    public function getNewState(?bool $executionWasSuccessful = null): State
     {
         return new ClosedState(
-            totalTries: $executionWasSuccessful ? 0 : 1,
+            totalFailedTries: $executionWasSuccessful ? 0 : 1,
             noTriesTimestampLimit: null,
         );
     }
