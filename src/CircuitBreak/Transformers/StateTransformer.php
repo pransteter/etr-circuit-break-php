@@ -28,8 +28,7 @@ class StateTransformer
         $stateClassName = StateIdentifier::identifyStateClassName($rawState->name);
 
         return new $stateClassName(
-            totalTries: $rawState->totalTries,
-            triesLimit: $rawState->triesLimit,
+            totalFailedTries: $rawState->totalFailedTries,
             noTriesTimestampLimit: $rawState->noTriesTimestampLimit,
         );
     }
