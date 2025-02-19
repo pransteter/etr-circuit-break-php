@@ -16,6 +16,9 @@ class HalfOpenedStateStrategy extends Strategy
                 totalFailedTries: 0,
                 noTriesTimestampLimit: null,
             )
-            : clone $this->lastPersistedState;
+            : new OpenedState(
+                totalFailedTries: null,
+                noTriesTimestampLimit: $this->calculateNoTriesTimestampLimit(),
+            );
     }
 }
