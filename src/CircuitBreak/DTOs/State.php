@@ -30,4 +30,9 @@ abstract class State
     {
         return $this->totalFailedTries;
     }
+
+    public function getNoTriesTimestampLimit(): ?int
+    {
+        return $this->noTriesTimestampLimit;
+    }
 }

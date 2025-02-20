@@ -6,8 +6,8 @@ use Pransteter\CircuitBreak\Contracts\StateRepository;
 use Pransteter\CircuitBreak\DTOs\ClosedState;
 use Pransteter\CircuitBreak\DTOs\Configuration;
 use Pransteter\CircuitBreak\DTOs\HalfOpenedState;
-use Pransteter\CircuitBreak\DTOs\OpenedState;
 use Pransteter\CircuitBreak\DTOs\State;
+use Pransteter\CircuitBreak\Strategy\StrategyIdentifier;
 use Pransteter\CircuitBreak\Strategy\StrategyProcessor;
 use Pransteter\CircuitBreak\Transformers\StateTransformer;
 use Pransteter\CircuitBreak\Validators\StateValidator;
@@ -28,7 +28,9 @@ class CircuitBreak
             new StateValidator(),
         );
 
-        $this->strategyProcessor = new StrategyProcessor($this->configuration);
+        $this->strategyProcessor = new StrategyProcessor(
+            new StrategyIdentifier($this->configuration),
+        );
     }
 
     public function begin(): void
@@ -45,7 +47,7 @@ class CircuitBreak
             return true;
         }
 
-        return $this->canExecuteInAExceptionalCondition();
+        return $this->canExecuteToCheckIfComeBackToWork();
     }
 
     public function end(bool $executionWasSuccessful): void
@@ -72,7 +74,7 @@ class CircuitBreak
             : $this->stateTransformer->transformRawStateToDTOState($rawState);
     }
 
-    private function canExecuteInAExceptionalCondition(): bool
+    private function canExecuteToCheckIfComeBackToWork(): bool
     {
         $nextState = $this->strategyProcessor->processStrategy(
             $this->currentState,
