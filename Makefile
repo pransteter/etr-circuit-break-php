@@ -17,3 +17,6 @@ down: ## Stop docker compose
 
 sh: ## Access container sh
 	docker compose exec php sh
+
+grumphp: ## Check code quality
+	docker compose exec php ./vendor/bin/grumphp run

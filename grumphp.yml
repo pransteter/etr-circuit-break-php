@@ -1,2 +1,11 @@
 grumphp:
-    tasks: {  }
+    tasks:
+        phpunit:
+            coverage-php: '80'
+        # phplint: ~
+        # behat: ~
+        
+        # phpcs:
+        #     standard:
+        #         - 'PSR12'
+

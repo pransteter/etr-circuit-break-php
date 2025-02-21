@@ -7,6 +7,11 @@ WORKDIR /var/www/html
 RUN apk update && apk upgrade \
     && apk add --no-cache \
     && apk add --no-cache git \
+    # && apk add --no-cache autoconf \
+    # && pecl channel-update pecl.php.net \
+    && apk add --no-cache autoconf \
+    && pecl install xdebug \
+    # && pecl install xdebug --configure-options '--with-php-config=/usr/bin/php-config' \
     # libzip-dev \
     # zip \
     # unzip \
