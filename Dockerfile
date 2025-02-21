@@ -6,6 +6,7 @@ WORKDIR /var/www/html
 
 RUN apk update && apk upgrade \
     && apk add --no-cache \
+    && apk add --no-cache git \
     # libzip-dev \
     # zip \
     # unzip \

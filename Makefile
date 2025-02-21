@@ -10,7 +10,10 @@ run-tests: ## Run tests
 	docker compose exec php ./vendor/bin/phpunit ./tests 
 
 up: ## Run docker compose
-	docker compose up -d --remove-orphans
+	docker compose down && docker compose build --no-cache && docker compose up -d --remove-orphans
 
 down: ## Stop docker compose
 	docker compose down -v
+
+sh: ## Access container sh
+	docker compose exec php sh
