@@ -2,16 +2,25 @@
 
 namespace Pransteter\CircuitBreak;
 
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 use Pransteter\CircuitBreak;
-use Pransteter\CircuitBreak\Contracts\HasCircuitBreak;
 use Pransteter\CircuitBreak\Contracts\StateRepository;
 use Pransteter\CircuitBreak\DTOs\Configuration;
-use Pransteter\CircuitBreak\DTOs\State;
+use Pransteter\CircuitBreak\Strategy\StrategyIdentifier;
 use Pransteter\CircuitBreak\Strategy\StrategyProcessor;
+use Pransteter\CircuitBreak\Transformers\StateTransformer;
 
+#[CoversClass(CircuitBreak::class)]
+#[UsesClass(Configuration::class)]
+#[UsesClass(StrategyIdentifier::class)]
+#[UsesClass(StrategyProcessor::class)]
+#[UsesClass(StateTransformer::class)]
 class CircuitBreakTest extends TestCase
 {
+    // #[CoversMethod(CircuitBreak::class, 'begin')]
+    // #[Test]
     public function testShouldApplyCircuitBreakFirstTime(): void
     {
         // Set

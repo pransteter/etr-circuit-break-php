@@ -12,6 +12,12 @@
          failOnPhpunitDeprecation="true"
          failOnRisky="true"
          failOnWarning="true">
+    <coverage>
+        <report>
+            <clover outputFile="build/logs/clover.xml"/>
+        </report>
+    </coverage>
+
     <testsuites>
         <testsuite name="default">
             <directory>tests</directory>
