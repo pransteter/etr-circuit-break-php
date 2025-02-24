@@ -1,0 +1,1 @@
+{"version":1,"defects":{"Pransteter\\CircuitBreak\\CircuitBreakTest::testShouldApplyCircuitBreak":8,"Pransteter\\CircuitBreak\\CircuitBreakTest::testShouldApplyCircuitBreakFirstTime":5},"times":{"Pransteter\\CircuitBreak\\CircuitBreakTest::testShouldApplyCircuitBreak":0.047,"Pransteter\\CircuitBreak\\CircuitBreakTest::testShouldApplyCircuitBreakFirstTime":1.516}}
