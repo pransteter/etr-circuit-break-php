@@ -3,11 +3,21 @@ grumphp:
         EXEC_GRUMPHP_COMMAND: 'docker compose exec -T php'
     tasks:
         phpunit:
+            metadata:
+                label: 'Running tests'
             config_file: phpunit.xml
             coverage-clover: 'build/logs/clover.xml'
         shell:
+            metadata:
+                label: 'Checking test coverage'
             scripts:
                 - ["-c", "/var/www/html/vendor/bin/coverage-check /var/www/html/build/logs/clover.xml 8"]
         phpcs:
+            metadata:
+                label: 'Checking code standard'
             standard:
                 - 'PSR12'
+        phpstan:
+            metadata:
+                label: 'Checking possible bugs'
+            level: 'max'

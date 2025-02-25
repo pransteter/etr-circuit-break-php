@@ -6,6 +6,9 @@ use stdClass;
 
 class StateValidator
 {
+    /**
+     * @var array<string>
+     */
     private array $errorsBag = [];
 
     public function isValid(stdClass $rawState): bool
@@ -15,6 +18,8 @@ class StateValidator
 
     public function getErrors(): string
     {
-        return json_encode($this->errorsBag);
+        $jsonErrors = json_encode($this->errorsBag);
+
+        return $jsonErrors === false ? '' : $jsonErrors;
     }
 }

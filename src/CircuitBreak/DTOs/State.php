@@ -19,11 +19,11 @@ abstract class State
 
     public function __toStdClass(): stdClass
     {
-        return new stdClass(
-            name: $this->name,
-            totalFailedTries: $this->totalFailedTries,
-            noTriesTimestampLimit: $this->noTriesTimestampLimit,
-        );
+        return (object) [
+            'name' => $this->name,
+            'totalFailedTries' => $this->totalFailedTries,
+            'noTriesTimestampLimit' => $this->noTriesTimestampLimit,
+        ];
     }
 
     public function getTotalFailedTries(): ?int

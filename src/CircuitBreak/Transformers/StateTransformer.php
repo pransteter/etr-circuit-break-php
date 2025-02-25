@@ -25,12 +25,22 @@ class StateTransformer
             );
         }
 
-        $stateClassName = StateIdentifier::identifyStateClassName($rawState->name);
+        $stateClassName = StateIdentifier::identifyStateClassName(
+            is_string($rawState->name)
+            ? $rawState->name
+            : '',
+        );
 
-        return new $stateClassName(
+        $newState = new $stateClassName(
             totalFailedTries: $rawState->totalFailedTries,
             noTriesTimestampLimit: $rawState->noTriesTimestampLimit,
         );
+
+        if (!($newState instanceof State)) {
+            throw new Exception('Invalid state.');
+        }
+
+        return $newState;
     }
 
     public function transformDTOStateToRawState(State $state): stdClass
