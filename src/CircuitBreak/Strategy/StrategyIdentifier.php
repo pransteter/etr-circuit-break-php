@@ -23,11 +23,6 @@ class StrategyIdentifier
     public function identityByCurrentState(?State $currentState = null): Strategy
     {
         switch ($currentState) {
-            case null:
-                return new InitialStrategy(
-                    $this->configuration,
-                    $currentState,
-                );
             case $currentState instanceof ClosedState:
                 return new ClosedStateStrategy(
                     $this->configuration,
@@ -40,6 +35,11 @@ class StrategyIdentifier
                 );
             case $currentState instanceof OpenedState:
                 return new OpenedStateStrategy(
+                    $this->configuration,
+                    $currentState,
+                );
+            default:
+                return new InitialStrategy(
                     $this->configuration,
                     $currentState,
                 );

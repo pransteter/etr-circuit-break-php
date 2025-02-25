@@ -16,7 +16,8 @@
         "phpunit/phpunit": "^11",
         "phpro/grumphp": "^2.10",
         "rregeer/phpunit-coverage-check": "^0.3.1",
-        "squizlabs/php_codesniffer": "*"
+        "squizlabs/php_codesniffer": "*",
+        "phpstan/phpstan": "^2.1"
     },
     "autoload": {
         "psr-4": {

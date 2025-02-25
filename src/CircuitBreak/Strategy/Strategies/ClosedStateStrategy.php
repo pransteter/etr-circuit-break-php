@@ -2,8 +2,7 @@
 
 namespace Pransteter\CircuitBreak\Strategy\Strategies;
 
-use DateTime;
-use DateInterval;
+use Exception;
 use Pransteter\CircuitBreak\DTOs\State;
 use Pransteter\CircuitBreak\DTOs\ClosedState;
 use Pransteter\CircuitBreak\DTOs\OpenedState;
@@ -25,6 +24,10 @@ class ClosedStateStrategy extends Strategy
 
     private function getNewStateWhenExecutionWasNotSuccessful(): State
     {
+        if (!($this->lastPersistedState instanceof ClosedState)) {
+            throw new Exception('Last persisted state must be ClosedState.');
+        }
+
         $totalFailedTries = $this->lastPersistedState->getTotalFailedTries() ?? 0;
 
         if ($totalFailedTries === $this->configuration->failedTriesLimit) {
