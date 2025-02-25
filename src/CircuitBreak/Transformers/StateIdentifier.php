@@ -9,7 +9,7 @@ use stdClass;
 
 class StateIdentifier
 {
-    static public function identifyStateClassName(string $stateName): string
+    public static function identifyStateClassName(string $stateName): string
     {
         switch ($stateName) {
             case 'Opened':

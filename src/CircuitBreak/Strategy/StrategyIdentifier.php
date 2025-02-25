@@ -22,7 +22,7 @@ class StrategyIdentifier
 
     public function identityByCurrentState(?State $currentState = null): Strategy
     {
-        switch($currentState) {
+        switch ($currentState) {
             case null:
                 return new InitialStrategy(
                     $this->configuration,

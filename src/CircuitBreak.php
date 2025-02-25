@@ -69,7 +69,7 @@ class CircuitBreak
             $this->configuration->processIdentifier,
         );
 
-        $this->currentState = is_null($rawState) 
+        $this->currentState = is_null($rawState)
             ? null
             : $this->stateTransformer->transformRawStateToDTOState($rawState);
     }
@@ -83,7 +83,7 @@ class CircuitBreak
 
         if ($nextState instanceof HalfOpenedState) {
             $this->updateCurrentState($nextState);
-            
+
             return true;
         }
 

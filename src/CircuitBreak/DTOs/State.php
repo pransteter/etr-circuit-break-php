@@ -5,7 +5,7 @@ namespace Pransteter\CircuitBreak\DTOs;
 use stdClass;
 
 abstract class State
-{   
+{
     private readonly string $name;
 
     abstract protected function getName(): string;

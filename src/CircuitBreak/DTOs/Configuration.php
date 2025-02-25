@@ -8,5 +8,6 @@ final class Configuration
         public readonly string $processIdentifier,
         public readonly int $failedTriesLimit,
         public readonly int $secondsToStayOpened,
-    ) {}
+    ) {
+    }
 }
