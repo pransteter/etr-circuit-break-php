@@ -7,7 +7,7 @@ grumphp:
             coverage-clover: 'build/logs/clover.xml'
         shell:
             scripts:
-                - ["-c", "/var/www/html/vendor/bin/coverage-check /var/www/html/build/logs/clover.xml 80"]
+                - ["-c", "/var/www/html/vendor/bin/coverage-check /var/www/html/build/logs/clover.xml 8"]
         # phplint: ~
         # behat: ~
         

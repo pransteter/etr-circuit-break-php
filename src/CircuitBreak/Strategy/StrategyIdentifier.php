@@ -17,8 +17,7 @@ class StrategyIdentifier
 {
     public function __construct(
         private readonly Configuration $configuration
-    )
-    {
+    ) {
     }
 
     public function identityByCurrentState(?State $currentState = null): Strategy
