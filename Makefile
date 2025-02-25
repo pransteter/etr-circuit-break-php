@@ -21,5 +21,8 @@ down: ## Stop docker compose
 sh: ## Access container sh
 	docker compose exec php sh
 
-grumphp: ## Check code quality
+code-quality: ## Check code quality
 	docker compose exec php ./vendor/bin/grumphp run
+
+code-standard-fix: ## Run codestandard autofix
+	docker compose exec php ./vendor/bin/phpcbf --standard=PSR12 ./src/*
