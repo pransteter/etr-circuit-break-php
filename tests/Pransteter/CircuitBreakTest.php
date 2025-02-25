@@ -19,8 +19,6 @@ use Pransteter\CircuitBreak\Transformers\StateTransformer;
 #[UsesClass(StateTransformer::class)]
 class CircuitBreakTest extends TestCase
 {
-    // #[CoversMethod(CircuitBreak::class, 'begin')]
-    // #[Test]
     public function testShouldApplyCircuitBreakFirstTime(): void
     {
         // Set
