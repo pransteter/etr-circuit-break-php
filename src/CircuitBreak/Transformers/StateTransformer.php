@@ -22,7 +22,7 @@ class StateTransformer
                     'There are one or more invalid attributes in the state. Look: %s',
                     $this->stateValidator->getErrors(),
                 ),
-            );    
+            );
         }
 
         $stateClassName = StateIdentifier::identifyStateClassName($rawState->name);

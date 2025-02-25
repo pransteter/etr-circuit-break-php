@@ -8,7 +8,6 @@ grumphp:
         shell:
             scripts:
                 - ["-c", "/var/www/html/vendor/bin/coverage-check /var/www/html/build/logs/clover.xml 8"]
-        # phpcs:
-        #     standard:
-        #         - 'PSR12'
-
+        phpcs:
+            standard:
+                - 'PSR12'

@@ -15,7 +15,7 @@ use Pransteter\CircuitBreak\Strategy\Strategies\OpenedStateStrategy;
 
 class StrategyProcessor
 {
-   public function __construct(
+    public function __construct(
         private readonly StrategyIdentifier $strategyIdentifier,
     ) {
     }
