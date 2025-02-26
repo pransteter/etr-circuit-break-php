@@ -1,6 +1,6 @@
 <?php
 
-namespace Pransteter\CircuitBreak\Validators;
+namespace Pransteter\MinimalCB\Validators;
 
 use stdClass;
 

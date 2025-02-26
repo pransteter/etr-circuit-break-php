@@ -2,17 +2,17 @@
 
 namespace Pransteter;
 
-use Pransteter\CircuitBreak\Contracts\StateRepository;
-use Pransteter\CircuitBreak\DTOs\ClosedState;
-use Pransteter\CircuitBreak\DTOs\Configuration;
-use Pransteter\CircuitBreak\DTOs\HalfOpenedState;
-use Pransteter\CircuitBreak\DTOs\State;
-use Pransteter\CircuitBreak\Strategy\StrategyIdentifier;
-use Pransteter\CircuitBreak\Strategy\StrategyProcessor;
-use Pransteter\CircuitBreak\Transformers\StateTransformer;
-use Pransteter\CircuitBreak\Validators\StateValidator;
+use Pransteter\MinimalCB\Contracts\StateRepository;
+use Pransteter\MinimalCB\DTOs\ClosedState;
+use Pransteter\MinimalCB\DTOs\Configuration;
+use Pransteter\MinimalCB\DTOs\HalfOpenedState;
+use Pransteter\MinimalCB\DTOs\State;
+use Pransteter\MinimalCB\Strategy\StrategyIdentifier;
+use Pransteter\MinimalCB\Strategy\StrategyProcessor;
+use Pransteter\MinimalCB\Transformers\StateTransformer;
+use Pransteter\MinimalCB\Validators\StateValidator;
 
-class CircuitBreak
+class MinimalCB
 {
     private ?State $currentState;
 

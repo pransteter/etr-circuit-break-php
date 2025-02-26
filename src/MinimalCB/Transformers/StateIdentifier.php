@@ -1,10 +1,10 @@
 <?php
 
-namespace Pransteter\CircuitBreak\Transformers;
+namespace Pransteter\MinimalCB\Transformers;
 
-use Pransteter\CircuitBreak\DTOs\ClosedState;
-use Pransteter\CircuitBreak\DTOs\HalfOpenedState;
-use Pransteter\CircuitBreak\DTOs\OpenedState;
+use Pransteter\MinimalCB\DTOs\ClosedState;
+use Pransteter\MinimalCB\DTOs\HalfOpenedState;
+use Pransteter\MinimalCB\DTOs\OpenedState;
 use stdClass;
 
 class StateIdentifier

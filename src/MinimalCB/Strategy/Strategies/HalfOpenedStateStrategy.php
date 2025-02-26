@@ -1,11 +1,11 @@
 <?php
 
-namespace Pransteter\CircuitBreak\Strategy\Strategies;
+namespace Pransteter\MinimalCB\Strategy\Strategies;
 
-use Pransteter\CircuitBreak\DTOs\ClosedState;
-use Pransteter\CircuitBreak\DTOs\OpenedState;
-use Pransteter\CircuitBreak\DTOs\State;
-use Pransteter\CircuitBreak\Strategy\Contracts\Strategy;
+use Pransteter\MinimalCB\DTOs\ClosedState;
+use Pransteter\MinimalCB\DTOs\OpenedState;
+use Pransteter\MinimalCB\DTOs\State;
+use Pransteter\MinimalCB\Strategy\Contracts\Strategy;
 
 class HalfOpenedStateStrategy extends Strategy
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Pransteter\CircuitBreak\Contracts;
+namespace Pransteter\MinimalCB\Contracts;
 
 interface StateRepository
 {

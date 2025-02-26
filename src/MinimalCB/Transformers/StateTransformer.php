@@ -1,10 +1,10 @@
 <?php
 
-namespace Pransteter\CircuitBreak\Transformers;
+namespace Pransteter\MinimalCB\Transformers;
 
 use Exception;
-use Pransteter\CircuitBreak\DTOs\State;
-use Pransteter\CircuitBreak\Validators\StateValidator;
+use Pransteter\MinimalCB\DTOs\State;
+use Pransteter\MinimalCB\Validators\StateValidator;
 use stdClass;
 
 class StateTransformer

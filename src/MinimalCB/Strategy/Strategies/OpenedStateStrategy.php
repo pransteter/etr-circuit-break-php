@@ -1,13 +1,13 @@
 <?php
 
-namespace Pransteter\CircuitBreak\Strategy\Strategies;
+namespace Pransteter\MinimalCB\Strategy\Strategies;
 
 use DateTime;
 use Exception;
-use Pransteter\CircuitBreak\DTOs\HalfOpenedState;
-use Pransteter\CircuitBreak\DTOs\OpenedState;
-use Pransteter\CircuitBreak\DTOs\State;
-use Pransteter\CircuitBreak\Strategy\Contracts\Strategy;
+use Pransteter\MinimalCB\DTOs\HalfOpenedState;
+use Pransteter\MinimalCB\DTOs\OpenedState;
+use Pransteter\MinimalCB\DTOs\State;
+use Pransteter\MinimalCB\Strategy\Contracts\Strategy;
 
 class OpenedStateStrategy extends Strategy
 {
