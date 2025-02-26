@@ -1,6 +1,6 @@
 <?php
 
-namespace Pransteter\CircuitBreak\DTOs;
+namespace Pransteter\MinimalCB\DTOs;
 
 final class HalfOpenedState extends State
 {

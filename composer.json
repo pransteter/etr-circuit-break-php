@@ -1,5 +1,5 @@
 {
-    "name": "pransteter/etr-circuit-break-php",
+    "name": "pransteter/minimalcb-php",
     "description": "A little library to offer a simple manager of circuit breaker pattern.",
     "type": "library",
     "license": "MIT",

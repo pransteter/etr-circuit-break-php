@@ -1,12 +1,12 @@
 <?php
 
-namespace Pransteter\CircuitBreak\Strategy\Contracts;
+namespace Pransteter\MinimalCB\Strategy\Contracts;
 
 use DateInterval;
 use DateTime;
 use Exception;
-use Pransteter\CircuitBreak\DTOs\Configuration;
-use Pransteter\CircuitBreak\DTOs\State;
+use Pransteter\MinimalCB\DTOs\Configuration;
+use Pransteter\MinimalCB\DTOs\State;
 
 abstract class Strategy
 {

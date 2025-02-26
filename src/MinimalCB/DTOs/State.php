@@ -1,6 +1,6 @@
 <?php
 
-namespace Pransteter\CircuitBreak\DTOs;
+namespace Pransteter\MinimalCB\DTOs;
 
 use stdClass;
 

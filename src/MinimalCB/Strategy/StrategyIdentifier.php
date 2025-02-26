@@ -1,17 +1,17 @@
 <?php
 
-namespace Pransteter\CircuitBreak\Strategy;
+namespace Pransteter\MinimalCB\Strategy;
 
-use Pransteter\CircuitBreak\DTOs\ClosedState;
-use Pransteter\CircuitBreak\DTOs\Configuration;
-use Pransteter\CircuitBreak\DTOs\HalfOpenedState;
-use Pransteter\CircuitBreak\DTOs\OpenedState;
-use Pransteter\CircuitBreak\DTOs\State;
-use Pransteter\CircuitBreak\Strategy\Contracts\Strategy;
-use Pransteter\CircuitBreak\Strategy\Strategies\ClosedStateStrategy;
-use Pransteter\CircuitBreak\Strategy\Strategies\HalfOpenedStateStrategy;
-use Pransteter\CircuitBreak\Strategy\Strategies\InitialStrategy;
-use Pransteter\CircuitBreak\Strategy\Strategies\OpenedStateStrategy;
+use Pransteter\MinimalCB\DTOs\ClosedState;
+use Pransteter\MinimalCB\DTOs\Configuration;
+use Pransteter\MinimalCB\DTOs\HalfOpenedState;
+use Pransteter\MinimalCB\DTOs\OpenedState;
+use Pransteter\MinimalCB\DTOs\State;
+use Pransteter\MinimalCB\Strategy\Contracts\Strategy;
+use Pransteter\MinimalCB\Strategy\Strategies\ClosedStateStrategy;
+use Pransteter\MinimalCB\Strategy\Strategies\HalfOpenedStateStrategy;
+use Pransteter\MinimalCB\Strategy\Strategies\InitialStrategy;
+use Pransteter\MinimalCB\Strategy\Strategies\OpenedStateStrategy;
 
 class StrategyIdentifier
 {
