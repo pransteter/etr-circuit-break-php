@@ -63,6 +63,11 @@ class MinimalCB
         );
     }
 
+    public function getCurrentState(): ?State
+    {
+        return $this->currentState;
+    }
+
     private function loadCurrentState(): void
     {
         $rawState = $this->stateRepository->getState(
