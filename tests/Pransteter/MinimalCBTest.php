@@ -3,6 +3,7 @@
 namespace Pransteter\MinimalCB;
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 use Pransteter\MinimalCB;
@@ -11,10 +12,11 @@ use Pransteter\MinimalCB\DTOs\ClosedState;
 use Pransteter\MinimalCB\DTOs\Configuration;
 use Pransteter\MinimalCB\DTOs\State;
 use Pransteter\MinimalCB\Strategy\Contracts\Strategy;
-use Pransteter\MinimalCB\Strategy\Strategies\ClosedStateStrategy;
+use Pransteter\MinimalCB\Strategy\Strategies\InitialStrategy;
 use Pransteter\MinimalCB\Strategy\StrategyIdentifier;
 use Pransteter\MinimalCB\Strategy\StrategyProcessor;
 use Pransteter\MinimalCB\Transformers\StateTransformer;
+use stdClass;
 
 #[CoversClass(MinimalCB::class)]
 #[UsesClass(Configuration::class)]
@@ -24,11 +26,14 @@ use Pransteter\MinimalCB\Transformers\StateTransformer;
 #[UsesClass(ClosedState::class)]
 #[UsesClass(State::class)]
 #[UsesClass(Strategy::class)]
-#[UsesClass(ClosedStateStrategy::class)]
+#[UsesClass(InitialStrategy::class)]
 class MinimalCBTest extends TestCase
 {
-    public function testShouldApplyMinimalCBFirstTime(): void
-    {
+    #[DataProvider('initialCaseDataProvider')]
+    public function testShouldApplyMinimalCBFirstTimeWhenProcessExecutedAsSuccess(
+        bool $processExecutedAsSuccess,
+        stdClass $expectedFirstState,
+    ): void {
         // Set
         $processIdentifier = 'test-1';
         $configuration = new Configuration(
@@ -37,11 +42,6 @@ class MinimalCBTest extends TestCase
             secondsToStayOpened: 5,
         );
         $stateRepository = $this->createMock(StateRepository::class);
-        $firstState = (object) [
-            'name' => 'closed',
-            'totalFailedTries' => 0,
-            'noTriesTimestampLimit' => null,
-        ];
         $cb = new MinimalCB($configuration, $stateRepository);
 
         // Expectations
@@ -54,16 +54,42 @@ class MinimalCBTest extends TestCase
             ->method('saveState')
             ->with(
                 $processIdentifier,
-                $this->equalTo($firstState),
+                $this->equalTo($expectedFirstState),
             )->willReturn(true);
 
         // Actions
         $cb->begin();
         $canExecute = $cb->canExecute();
-        $cb->end(true);
+        $cb->end($processExecutedAsSuccess);
 
         // Assertions
         $this->assertTrue($canExecute);
         $this->assertSame(null, $cb->getCurrentState());
+    }
+
+    /**
+     * @return array<array<bool|stdClass>>
+     */
+    public static function initialCaseDataProvider(): array
+    {
+        $baseState = [
+            'name' => 'closed',
+            'totalFailedTries' => 0,
+            'noTriesTimestampLimit' => null,
+        ];
+
+        return [
+            'Initial status when execution was success.' => [
+                'processExecutedAsSuccess' => true,
+                'expectedFirstState' => (object) $baseState,
+            ],
+            'Initial status when execution was failure.' => [
+                'processExecutedAsSuccess' => false,
+                'expectedFirstState' => (object) array_merge(
+                    $baseState,
+                    [ 'totalFailedTries' => 1 ],
+                ),
+            ],
+        ];
     }
 }

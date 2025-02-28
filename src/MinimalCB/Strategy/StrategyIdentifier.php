@@ -2,6 +2,7 @@
 
 namespace Pransteter\MinimalCB\Strategy;
 
+use Exception;
 use Pransteter\MinimalCB\DTOs\ClosedState;
 use Pransteter\MinimalCB\DTOs\Configuration;
 use Pransteter\MinimalCB\DTOs\HalfOpenedState;
@@ -22,6 +23,13 @@ class StrategyIdentifier
 
     public function identityByCurrentState(?State $currentState = null): Strategy
     {
+        if (is_null($currentState)) {
+            return new InitialStrategy(
+                $this->configuration,
+                $currentState,
+            );
+        }
+
         switch ($currentState) {
             case $currentState instanceof ClosedState:
                 return new ClosedStateStrategy(
@@ -39,10 +47,7 @@ class StrategyIdentifier
                     $currentState,
                 );
             default:
-                return new InitialStrategy(
-                    $this->configuration,
-                    $currentState,
-                );
+                throw new Exception('Unknown state.');
         }
     }
 }
