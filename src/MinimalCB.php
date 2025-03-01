@@ -57,6 +57,8 @@ class MinimalCB
             $executionWasSuccessful,
         );
 
+        $this->currentState = $newState;
+
         $this->stateRepository->saveState(
             $this->configuration->processIdentifier,
             $this->stateTransformer->transformDTOStateToRawState($newState),
