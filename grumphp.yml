@@ -11,7 +11,7 @@ grumphp:
             metadata:
                 label: 'Checking test coverage'
             scripts:
-                - ["-c", "/var/www/html/vendor/bin/coverage-check /var/www/html/build/logs/clover.xml 8"]
+                - ["-c", "/var/www/html/vendor/bin/coverage-check /var/www/html/build/logs/clover.xml 16"]
         phpcs:
             metadata:
                 label: 'Checking code standard'

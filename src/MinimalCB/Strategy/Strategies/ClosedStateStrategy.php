@@ -12,25 +12,22 @@ class ClosedStateStrategy extends Strategy
 {
     public function getNewState(?bool $executionWasSuccessful = null): State
     {
-        if (!$executionWasSuccessful) {
-            return $this->getNewStateWhenExecutionWasNotSuccessful();
-        }
-
-        return new ClosedState(
-            totalFailedTries: 0,
-            noTriesTimestampLimit: null,
-        );
-    }
-
-    private function getNewStateWhenExecutionWasNotSuccessful(): State
-    {
         if (!($this->lastPersistedState instanceof ClosedState)) {
             throw new Exception('Last persisted state must be ClosedState.');
         }
 
         $totalFailedTries = $this->lastPersistedState->getTotalFailedTries() ?? 0;
 
-        if ($totalFailedTries === $this->configuration->failedTriesLimit) {
+        if (!$executionWasSuccessful) {
+            $totalFailedTries++;
+        }
+
+        return $this->getNewStateConsideringFailedTriesLimit($totalFailedTries);
+    }
+
+    private function getNewStateConsideringFailedTriesLimit(int $totalFailedTries): State
+    {
+        if ($totalFailedTries >= $this->configuration->failedTriesLimit) {
             return new OpenedState(
                 totalFailedTries: null,
                 noTriesTimestampLimit: $this->calculateNoTriesTimestampLimit(),
@@ -38,7 +35,7 @@ class ClosedStateStrategy extends Strategy
         }
 
         return new ClosedState(
-            totalFailedTries: $totalFailedTries + 1,
+            totalFailedTries: $totalFailedTries,
             noTriesTimestampLimit: null,
         );
     }
