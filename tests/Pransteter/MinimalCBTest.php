@@ -10,11 +10,13 @@ use Pransteter\MinimalCB;
 use Pransteter\MinimalCB\Contracts\StateRepository;
 use Pransteter\MinimalCB\DTOs\ClosedState;
 use Pransteter\MinimalCB\DTOs\Configuration;
+use Pransteter\MinimalCB\DTOs\HalfOpenedState;
 use Pransteter\MinimalCB\DTOs\OpenedState;
 use Pransteter\MinimalCB\DTOs\State;
 use Pransteter\MinimalCB\Strategy\Contracts\Strategy;
 use Pransteter\MinimalCB\Strategy\Strategies\ClosedStateStrategy;
 use Pransteter\MinimalCB\Strategy\Strategies\InitialStrategy;
+use Pransteter\MinimalCB\Strategy\Strategies\OpenedStateStrategy;
 use Pransteter\MinimalCB\Strategy\StrategyIdentifier;
 use Pransteter\MinimalCB\Strategy\StrategyProcessor;
 use Pransteter\MinimalCB\Transformers\StateIdentifier;
@@ -32,9 +34,11 @@ use stdClass;
 #[UsesClass(State::class)]
 #[UsesClass(ClosedState::class)]
 #[UsesClass(OpenedState::class)]
+#[UsesClass(HalfOpenedState::class)]
 #[UsesClass(Strategy::class)]
 #[UsesClass(InitialStrategy::class)]
 #[UsesClass(ClosedStateStrategy::class)]
+#[UsesClass(OpenedStateStrategy::class)]
 class MinimalCBTest extends TestCase
 {
     #[DataProvider('initialCaseDataProvider')]
@@ -137,6 +141,58 @@ class MinimalCBTest extends TestCase
             : $this->assertIsInt($currentState?->getNoTriesTimestampLimit());
     }
 
+    #[DataProvider('openedCaseDataProvider')]
+    public function testShouldApplyMinimalCBCircuitIsOpened(
+        bool $noTriesTimestampLimitIsExpired,
+        string $expectedState,
+    ): void {
+        // Set
+        $processIdentifier = 'test-1';
+        $noTriesTimestampLimit = $noTriesTimestampLimitIsExpired
+            ? strtotime('yesterday')
+            : strtotime('tomorrow');
+        $persistedState = (object) [
+            'name' => 'opened',
+            'totalFailedTries' => null,
+            'noTriesTimestampLimit' => $noTriesTimestampLimit,
+        ];
+        $configuration = new Configuration(
+            processIdentifier: $processIdentifier,
+            failedTriesLimit: 3,
+            secondsToStayOpened: 5,
+        );
+        $stateRepository = $this->createMock(StateRepository::class);
+        $cb = new MinimalCB($configuration, $stateRepository);
+
+        // Expectations
+        $stateRepository->expects($this->once())
+            ->method('getState')
+            ->with($processIdentifier)
+            ->willReturn($persistedState);
+
+        if ($noTriesTimestampLimitIsExpired) {
+            $stateRepository->expects($this->once())
+            ->method('saveState')
+            ->with(
+                $processIdentifier,
+                $this->equalTo((object) [
+                    'name' => 'halfOpened',
+                    'totalFailedTries' => null,
+                    'noTriesTimestampLimit' => null,
+                ]),
+            )->willReturn(true);
+        }
+
+        // Actions
+        $cb->begin();
+        $canExecute = $cb->canExecute();
+        $currentState = $cb->getCurrentState();
+
+        // Assertions
+        $this->assertSame($canExecute, $noTriesTimestampLimitIsExpired);
+        $this->assertSame($expectedState, is_null($currentState) ?: get_class($currentState));
+    }
+
     /**
      * @return array<array<bool|int>>
      */
@@ -177,6 +233,23 @@ class MinimalCBTest extends TestCase
                 'persistedTotalFailedTries' => 2,
                 'expectedState' => OpenedState::class,
                 'expectedTotalFailedTries' => null,
+            ],
+        ];
+    }
+
+    /**
+     * @return array<array<bool|string>>
+     */
+    public static function openedCaseDataProvider(): array
+    {
+        return [
+            'Opened status when now is less than no tries timestamp limit.' => [
+                'noTriesTimestampLimitIsExpired' => false,
+                'expectedState' => OpenedState::class,
+            ],
+            'Opened status when now is more than no tries timestamp limit.' => [
+                'noTriesTimestampLimitIsExpired' => true,
+                'expectedState' => HalfOpenedState::class,
             ],
         ];
     }
