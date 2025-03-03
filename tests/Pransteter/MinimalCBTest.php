@@ -15,6 +15,7 @@ use Pransteter\MinimalCB\DTOs\OpenedState;
 use Pransteter\MinimalCB\DTOs\State;
 use Pransteter\MinimalCB\Strategy\Contracts\Strategy;
 use Pransteter\MinimalCB\Strategy\Strategies\ClosedStateStrategy;
+use Pransteter\MinimalCB\Strategy\Strategies\HalfOpenedStateStrategy;
 use Pransteter\MinimalCB\Strategy\Strategies\InitialStrategy;
 use Pransteter\MinimalCB\Strategy\Strategies\OpenedStateStrategy;
 use Pransteter\MinimalCB\Strategy\StrategyIdentifier;
@@ -39,6 +40,7 @@ use stdClass;
 #[UsesClass(InitialStrategy::class)]
 #[UsesClass(ClosedStateStrategy::class)]
 #[UsesClass(OpenedStateStrategy::class)]
+#[UsesClass(HalfOpenedStateStrategy::class)]
 class MinimalCBTest extends TestCase
 {
     #[DataProvider('initialCaseDataProvider')]
@@ -144,7 +146,9 @@ class MinimalCBTest extends TestCase
     #[DataProvider('openedCaseDataProvider')]
     public function testShouldApplyMinimalCBCircuitIsOpened(
         bool $noTriesTimestampLimitIsExpired,
-        string $expectedState,
+        string $expectedMidState,
+        ?bool $processExecutedAsSuccess,
+        string $expectedFinalState,
     ): void {
         // Set
         $processIdentifier = 'test-1';
@@ -171,17 +175,51 @@ class MinimalCBTest extends TestCase
             ->willReturn($persistedState);
 
         if ($noTriesTimestampLimitIsExpired) {
-            $stateRepository->expects($this->once())
+            $stateRepository->expects($this->exactly(2))
             ->method('saveState')
             ->with(
                 $processIdentifier,
-                $this->equalTo((object) [
-                    'name' => 'halfOpened',
-                    'totalFailedTries' => null,
-                    'noTriesTimestampLimit' => null,
-                ]),
+                $this->anything(),
             )->willReturn(true);
         }
+
+        // Actions
+        $cb->begin();
+        $canExecute = $cb->canExecute();
+        $midState = $cb->getCurrentState();
+        if ($canExecute && is_bool($processExecutedAsSuccess)) {
+            $cb->end($processExecutedAsSuccess);
+        }
+        $finalState = $cb->getCurrentState();
+
+        // Assertions
+        $this->assertSame($canExecute, $noTriesTimestampLimitIsExpired);
+        $this->assertSame($expectedMidState, is_null($midState) ?: get_class($midState));
+        $this->assertSame($expectedFinalState, is_null($finalState) ?: get_class($finalState));
+    }
+
+    public function testShouldApplyMinimalCBCircuitIsHalfOpended(): void
+    {
+        // Set
+        $processIdentifier = 'test-1';
+        $persistedState = (object) [
+            'name' => 'halfOpened',
+            'totalFailedTries' => null,
+            'noTriesTimestampLimit' => null,
+        ];
+        $configuration = new Configuration(
+            processIdentifier: $processIdentifier,
+            failedTriesLimit: 3,
+            secondsToStayOpened: 5,
+        );
+        $stateRepository = $this->createMock(StateRepository::class);
+        $cb = new MinimalCB($configuration, $stateRepository);
+
+        // Expectations
+        $stateRepository->expects($this->once())
+            ->method('getState')
+            ->with($processIdentifier)
+            ->willReturn($persistedState);
 
         // Actions
         $cb->begin();
@@ -189,8 +227,8 @@ class MinimalCBTest extends TestCase
         $currentState = $cb->getCurrentState();
 
         // Assertions
-        $this->assertSame($canExecute, $noTriesTimestampLimitIsExpired);
-        $this->assertSame($expectedState, is_null($currentState) ?: get_class($currentState));
+        $this->assertFalse($canExecute);
+        $this->assertInstanceOf(HalfOpenedState::class, $currentState);
     }
 
     /**
@@ -238,18 +276,28 @@ class MinimalCBTest extends TestCase
     }
 
     /**
-     * @return array<array<bool|string>>
+     * @return array<array<bool|string|null>>
      */
     public static function openedCaseDataProvider(): array
     {
         return [
             'Opened status when now is less than no tries timestamp limit.' => [
                 'noTriesTimestampLimitIsExpired' => false,
-                'expectedState' => OpenedState::class,
+                'expectedMidState' => OpenedState::class,
+                'processExecutedAsSuccess' => null,
+                'expectedFinalState' => OpenedState::class,
             ],
-            'Opened status when now is more than no tries timestamp limit.' => [
+            'Opened status when now is more than no tries timestamp limit and execution was success.' => [
                 'noTriesTimestampLimitIsExpired' => true,
-                'expectedState' => HalfOpenedState::class,
+                'expectedMidState' => HalfOpenedState::class,
+                'processExecutedAsSuccess' => true,
+                'expectedFinalState' => ClosedState::class,
+            ],
+            'Opened status when now is more than no tries timestamp limit and execution was failure.' => [
+                'noTriesTimestampLimitIsExpired' => true,
+                'expectedMidState' => HalfOpenedState::class,
+                'processExecutedAsSuccess' => false,
+                'expectedFinalState' => OpenedState::class,
             ],
         ];
     }
