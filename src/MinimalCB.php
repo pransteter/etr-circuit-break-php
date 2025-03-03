@@ -2,6 +2,7 @@
 
 namespace Pransteter;
 
+use Exception;
 use Pransteter\MinimalCB\Contracts\StateRepository;
 use Pransteter\MinimalCB\DTOs\ClosedState;
 use Pransteter\MinimalCB\DTOs\Configuration;
@@ -19,6 +20,8 @@ class MinimalCB
     private readonly StateTransformer $stateTransformer;
 
     private readonly StrategyProcessor $strategyProcessor;
+
+    private ?bool $canExecute = null;
 
     public function __construct(
         private readonly Configuration $configuration,
@@ -40,6 +43,17 @@ class MinimalCB
 
     public function canExecute(): bool
     {
+        if (!is_null($this->canExecute)) {
+            return $this->canExecute;
+        }
+
+        $this->canExecute = $this->checkCanExecute();
+
+        return $this->canExecute;
+    }
+
+    private function checkCanExecute(): bool
+    {
         if (
             is_null($this->currentState)
             || $this->currentState instanceof ClosedState
@@ -47,11 +61,19 @@ class MinimalCB
             return true;
         }
 
+        if ($this->currentState instanceof HalfOpenedState) {
+            return false;
+        }
+
         return $this->canExecuteToCheckIfComeBackToWork();
     }
 
     public function end(bool $executionWasSuccessful): void
     {
+        if (!$this->canExecute) {
+            throw new Exception('Process can not be executed.');
+        }
+
         $newState = $this->strategyProcessor->processStrategy(
             $this->currentState,
             $executionWasSuccessful,
@@ -63,6 +85,8 @@ class MinimalCB
             $this->configuration->processIdentifier,
             $this->stateTransformer->transformDTOStateToRawState($newState),
         );
+
+        $this->canExecute = null;
     }
 
     public function getCurrentState(): ?State
