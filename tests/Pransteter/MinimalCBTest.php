@@ -231,6 +231,47 @@ class MinimalCBTest extends TestCase
         $this->assertInstanceOf(HalfOpenedState::class, $currentState);
     }
 
+    #[DataProvider('checkCanExecuteMoreThanOnceDataProvider')]
+    public function testShouldCheckCanExecuteMoreThanOnce(
+        string $persistedState,
+        bool $expectedCanExecute,
+        ?bool $noTriesTimestampLimitIsExpired,
+    ): void {
+        // Set
+        $processIdentifier = 'test-1';
+        $persistedStateName = $persistedState::getName();
+        $noTriesTimestampLimit = $persistedStateName === OpenedState::getName()
+            ? ($noTriesTimestampLimitIsExpired === true ? strtotime('yesterday') : strtotime('tomorrow'))
+            : null;
+        $persistedState = (object) [
+            'name' => $persistedStateName,
+            'totalFailedTries' => 0,
+            'noTriesTimestampLimit' => $noTriesTimestampLimit,
+        ];
+        $configuration = new Configuration(
+            processIdentifier: $processIdentifier,
+            failedTriesLimit: 3,
+            secondsToStayOpened: 5,
+        );
+        $stateRepository = $this->createMock(StateRepository::class);
+        $cb = new MinimalCB($configuration, $stateRepository);
+
+        // Expectations
+        $stateRepository->expects($this->once())
+            ->method('getState')
+            ->with($processIdentifier)
+            ->willReturn($persistedState);
+
+        // Actions
+        $cb->begin();
+        $canExecuteFirstTime = $cb->canExecute();
+        $canExecuteSecondTime = $cb->canExecute();
+
+        // Assertions
+        $this->assertSame($expectedCanExecute, $canExecuteFirstTime);
+        $this->assertSame($expectedCanExecute, $canExecuteSecondTime);
+    }
+
     /**
      * @return array<array<bool|int>>
      */
@@ -298,6 +339,35 @@ class MinimalCBTest extends TestCase
                 'expectedMidState' => HalfOpenedState::class,
                 'processExecutedAsSuccess' => false,
                 'expectedFinalState' => OpenedState::class,
+            ],
+        ];
+    }
+
+    /**
+     * @return array<array<bool|string|null>>
+     */
+    public static function checkCanExecuteMoreThanOnceDataProvider(): array
+    {
+        return [
+            'HalfOpenedState as persisted state' => [
+                'persistedState' => HalfOpenedState::class,
+                'expectedCanExecute' => false,
+                'noTriesTimestampLimitIsExpired' => null,
+            ],
+            'OpenedState with noTriesTimestampLimit expired as persisted state' => [
+                'persistedState' => OpenedState::class,
+                'expectedCanExecute' => true,
+                'noTriesTimestampLimitIsExpired' => true,
+            ],
+            'OpenedState with noTriesTimestampLimit not expired as persisted state' => [
+                'persistedState' => OpenedState::class,
+                'expectedCanExecute' => false,
+                'noTriesTimestampLimitIsExpired' => false,
+            ],
+            'ClosedState as persisted state' => [
+                'persistedState' => ClosedState::class,
+                'expectedCanExecute' => true,
+                'noTriesTimestampLimitIsExpired' => null,
             ],
         ];
     }
