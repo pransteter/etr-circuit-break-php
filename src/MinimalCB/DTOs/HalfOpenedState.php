@@ -4,9 +4,9 @@ namespace Pransteter\MinimalCB\DTOs;
 
 final class HalfOpenedState extends State
 {
-    protected const NAME = 'halfOpened';
+    private const NAME = 'halfOpened';
 
-    protected function getName(): string
+    public static function getName(): string
     {
         return self::NAME;
     }

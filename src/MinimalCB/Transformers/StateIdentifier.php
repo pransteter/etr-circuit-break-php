@@ -12,11 +12,11 @@ class StateIdentifier
     public static function identifyStateClassName(string $stateName): string
     {
         switch ($stateName) {
-            case 'opened':
+            case OpenedState::getName():
                 return OpenedState::class;
-            case 'closed':
+            case ClosedState::getName():
                 return ClosedState::class;
-            case 'halfOpened':
+            case HalfOpenedState::getName():
                 return HalfOpenedState::class;
             default:
                 throw new \Exception('Invalid state name.');

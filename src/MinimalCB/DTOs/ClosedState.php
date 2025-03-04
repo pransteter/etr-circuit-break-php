@@ -4,9 +4,9 @@ namespace Pransteter\MinimalCB\DTOs;
 
 final class ClosedState extends State
 {
-    protected const NAME = 'closed';
+    private const NAME = 'closed';
 
-    protected function getName(): string
+    public static function getName(): string
     {
         return self::NAME;
     }
