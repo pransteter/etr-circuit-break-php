@@ -10,7 +10,7 @@ build-develop: ## Build docker image
 	docker compose up -d --remove-orphans && docker compose --rmi all && docker compose build --no-cache
 
 run-tests: ## Run tests
-	docker compose exec php ./vendor/bin/phpunit ./tests 
+	docker compose exec php ./vendor/bin/phpunit ./tests --coverage-html build/logs/coverage
 
 up: ## Run docker compose
 	docker compose down -v && docker compose up -d --remove-orphans
