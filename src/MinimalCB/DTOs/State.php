@@ -8,7 +8,7 @@ abstract class State
 {
     private readonly string $name;
 
-    abstract protected function getName(): string;
+    abstract public static function getName(): string;
 
     public function __construct(
         private readonly ?int $totalFailedTries,
