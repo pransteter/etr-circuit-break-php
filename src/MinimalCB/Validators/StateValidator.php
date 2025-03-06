@@ -20,6 +20,6 @@ class StateValidator
     {
         $jsonErrors = json_encode($this->errorsBag);
 
-        return $jsonErrors === false ? '' : $jsonErrors;
+        return $jsonErrors === false ? '[]' : $jsonErrors;
     }
 }
