@@ -24,7 +24,6 @@ use Pransteter\MinimalCB\Strategy\StrategyProcessor;
 use Pransteter\MinimalCB\Transformers\StateIdentifier;
 use Pransteter\MinimalCB\Transformers\StateTransformer;
 use Pransteter\MinimalCB\Validators\StateValidator;
-use stdClass;
 
 #[CoversClass(MinimalCB::class)]
 #[UsesClass(Configuration::class)]

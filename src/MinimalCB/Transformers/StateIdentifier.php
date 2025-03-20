@@ -5,7 +5,6 @@ namespace Pransteter\MinimalCB\Transformers;
 use Pransteter\MinimalCB\DTOs\ClosedState;
 use Pransteter\MinimalCB\DTOs\HalfOpenedState;
 use Pransteter\MinimalCB\DTOs\OpenedState;
-use stdClass;
 
 class StateIdentifier
 {
